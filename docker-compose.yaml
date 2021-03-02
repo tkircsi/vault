@@ -1,0 +1,11 @@
+# Use root/example as user/password credentials
+version: '2.4'
+
+services:
+  # vaultsrv:
+  #   build: .
+
+  vaultdb:
+    image: redis:6.2
+    ports:
+      - "6379:6379"
