@@ -22,6 +22,14 @@ func NewRedisVault(addr string, pwd string, db int) *RedisVault {
 		Password: pwd,
 		DB:       db,
 	})
+	v, err := rdb.Ping(ctx).Result()
+	if err != nil {
+		log.Fatal(err)
+	}
+	if v != "PONG" {
+		log.Fatal("can not get PONG from redis")
+	}
+	log.Printf("connected to redis OK")
 	return &RedisVault{rdb: rdb}
 }
 
@@ -35,7 +43,6 @@ func (r *RedisVault) Get(key string) (*models.Token, error) {
 
 func (r *RedisVault) Put(val string, exp time.Duration) (*models.Token, error) {
 	key := xid.New().String()
-	log.Printf("Expire in %d ns\n", exp)
 	_, err := r.rdb.Set(ctx, key, val, exp).Result()
 	if err != nil {
 		return nil, err

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -19,8 +18,10 @@ type application struct {
 var (
 	vaultdb   = "mem"
 	redisAddr = ""
-	redisUsr  = ""
+	redisPwd  = ""
 	redisDB   = 0
+
+	port = ":5000"
 )
 
 func init() {
@@ -30,8 +31,8 @@ func init() {
 	if v, ok := os.LookupEnv("REDIS_ADDR"); ok {
 		redisAddr = v
 	}
-	if v, ok := os.LookupEnv("REDIS_USER"); ok {
-		redisUsr = v
+	if v, ok := os.LookupEnv("REDIS_PWD"); ok {
+		redisPwd = v
 	}
 	if v, ok := os.LookupEnv("REDIS_DB"); ok {
 		i, err := strconv.Atoi(v)
@@ -40,20 +41,24 @@ func init() {
 		}
 		redisDB = i
 	}
+
+	if v, ok := os.LookupEnv("PORT"); ok {
+		port = v
+	}
 }
 
 func main() {
-	fmt.Println("vault service started...")
+	log.Println("vault started...")
 	var v models.VaultHandler
 	switch vaultdb {
 	case "redis":
-		v = redis.NewRedisVault(redisAddr, redisUsr, redisDB)
+		v = redis.NewRedisVault(redisAddr, redisPwd, redisDB)
 	default:
 		v = mem.NewMemVault()
 	}
 
 	app := application{
-		port:  ":5000",
+		port:  port,
 		vault: v,
 	}
 

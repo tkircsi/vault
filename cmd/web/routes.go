@@ -1,6 +1,8 @@
 package main
 
 import (
+	"log"
+
 	"github.com/gin-gonic/gin"
 	"github.com/tkircsi/vault/api/rest"
 )
@@ -16,5 +18,6 @@ func (app *application) RunREST() {
 		v1.GET("/health", h.HealthCheck)
 	}
 
-	r.Run(app.port)
+	log.Println("vault REST service started...")
+	log.Fatal(r.Run(app.port))
 }

@@ -1,7 +1,6 @@
 package rest
 
 import (
-	"log"
 	"net/http"
 	"time"
 
@@ -45,7 +44,6 @@ func (h *RESTHandler) Put(c *gin.Context) {
 		return
 	}
 
-	log.Printf("req.expire: %d, %d\n", req.Exp, time.Duration(req.Exp)*time.Second)
 	token, err := h.vault.Put(req.Value, time.Duration(req.Exp)*time.Second)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
