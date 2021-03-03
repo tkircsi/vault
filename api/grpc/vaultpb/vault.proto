@@ -1,0 +1,28 @@
+syntax="proto3";
+
+package vault;
+option go_package="api/grpc/vaultpb";
+
+message GetRequest {
+  string Token = 1;
+}
+
+message GetResponse {
+  string Token = 1;
+  string Value = 2;
+}
+
+message PutRequest {
+  string Value = 1;
+  int32 Expire = 2;
+}
+
+message PutResponse {
+  string Token = 1;
+}
+
+service VaultService{
+  // Unary
+  rpc Get(GetRequest) returns (GetResponse){};
+  rpc Put(PutRequest) returns (PutResponse){};
+}

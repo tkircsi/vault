@@ -1,0 +1,1 @@
+protoc api/grpc/vault/vaultpb/vault.proto --go_out=plugins=grpc:.

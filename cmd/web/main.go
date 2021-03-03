@@ -62,5 +62,6 @@ func main() {
 		vault: v,
 	}
 
-	app.RunREST()
+	go app.RunREST()
+	app.RunGRPC()
 }
