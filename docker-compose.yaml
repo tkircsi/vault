@@ -2,10 +2,22 @@
 version: '2.4'
 
 services:
-  # vaultsrv:
-  #   build: .
+  vaultsrv:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - VAULT_DB=redis
+      - REDIS_ADDR=vaultdb:6379
+      - REDIS_USER=""
+      - REDIS_DB=0
+      - GIN_MODE=debug
+    depends_on:
+      - vaultdb
 
   vaultdb:
     image: redis:6.2
     ports:
       - "6379:6379"
+    volumes:
+      - $PWD/redis.conf:/usr/local/etc/redis/redis.conf

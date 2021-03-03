@@ -2,9 +2,13 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"strconv"
 
 	"github.com/tkircsi/vault/models"
 	"github.com/tkircsi/vault/models/mem"
+	"github.com/tkircsi/vault/models/redis"
 )
 
 type application struct {
@@ -12,29 +16,46 @@ type application struct {
 	vault models.VaultHandler
 }
 
+var (
+	vaultdb   = "mem"
+	redisAddr = ""
+	redisUsr  = ""
+	redisDB   = 0
+)
+
+func init() {
+	if v, ok := os.LookupEnv("VAULT_DB"); ok {
+		vaultdb = v
+	}
+	if v, ok := os.LookupEnv("REDIS_ADDR"); ok {
+		redisAddr = v
+	}
+	if v, ok := os.LookupEnv("REDIS_USER"); ok {
+		redisUsr = v
+	}
+	if v, ok := os.LookupEnv("REDIS_DB"); ok {
+		i, err := strconv.Atoi(v)
+		if err != nil {
+			log.Fatal(err)
+		}
+		redisDB = i
+	}
+}
+
 func main() {
-	fmt.Println("Service started...")
-	// v := redis.NewRedisVault("", "", 0)
-	v := mem.NewMemVault()
+	fmt.Println("vault service started...")
+	var v models.VaultHandler
+	switch vaultdb {
+	case "redis":
+		v = redis.NewRedisVault(redisAddr, redisUsr, redisDB)
+	default:
+		v = mem.NewMemVault()
+	}
+
 	app := application{
 		port:  ":5000",
 		vault: v,
 	}
 
 	app.RunREST()
-
-	// key := "DOES_NOT_EXISTS"
-	// v, err := app.vault.Get(key)
-	// if err != nil {
-	// 	log.Println(err)
-	// } else {
-	// 	fmt.Printf("Get value of token %q: %s\n", key, v.Value)
-	// }
-
-	// v, err = app.vault.Put(`{ "id": 444, "name": "Rambo"}`, 20*time.Minute)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// ret, _ := app.vault.Get(v.Token)
-	// fmt.Println(ret.Value)
 }

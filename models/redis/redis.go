@@ -2,6 +2,7 @@ package redis
 
 import (
 	"context"
+	"log"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -34,6 +35,7 @@ func (r *RedisVault) Get(key string) (*models.Token, error) {
 
 func (r *RedisVault) Put(val string, exp time.Duration) (*models.Token, error) {
 	key := xid.New().String()
+	log.Printf("Expire in %d ns\n", exp)
 	_, err := r.rdb.Set(ctx, key, val, exp).Result()
 	if err != nil {
 		return nil, err

@@ -1,6 +1,7 @@
-package main
+package rest
 
 import (
+	"log"
 	"net/http"
 	"time"
 
@@ -14,7 +15,7 @@ type RESTHandler struct {
 
 type PutReqest struct {
 	Value string `json:"value"`
-	Exp   int    `json:"expires"`
+	Exp   int    `json:"expire"`
 }
 
 func NewRESTHandler(v models.VaultHandler) *RESTHandler {
@@ -44,6 +45,7 @@ func (h *RESTHandler) Put(c *gin.Context) {
 		return
 	}
 
+	log.Printf("req.expire: %d, %d\n", req.Exp, time.Duration(req.Exp)*time.Second)
 	token, err := h.vault.Put(req.Value, time.Duration(req.Exp)*time.Second)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -55,4 +57,8 @@ func (h *RESTHandler) Put(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"token": token.Token,
 	})
+}
+
+func (h *RESTHandler) HealthCheck(c *gin.Context) {
+	c.String(http.StatusOK, "OK")
 }
