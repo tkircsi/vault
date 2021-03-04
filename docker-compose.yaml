@@ -6,11 +6,14 @@ services:
     build: .
     ports:
       - "5000:5000"
+      - "50051:50051"
     environment:
       - VAULT_DB=redis
       - REDIS_ADDR=vaultdb:6379
       - REDIS_PWD=mypassword
       - REDIS_DB=0
+      - REST_PORT=:5000
+      - GRPC_PORT=:50051
       - GIN_MODE=debug # 'release' for production
     depends_on:
       - vaultdb

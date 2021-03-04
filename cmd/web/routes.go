@@ -19,5 +19,5 @@ func (app *application) RunREST() {
 	}
 
 	log.Println("vault REST service started...")
-	log.Fatal(r.Run(app.port))
+	log.Fatal(r.Run(app.RESTPort))
 }

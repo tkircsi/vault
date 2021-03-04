@@ -11,8 +11,9 @@ import (
 )
 
 type application struct {
-	port  string
-	vault models.VaultHandler
+	RESTPort string
+	GRPCPort string
+	vault    models.VaultHandler
 }
 
 var (
@@ -21,7 +22,8 @@ var (
 	redisPwd  = ""
 	redisDB   = 0
 
-	port = ":5000"
+	restport = ":5000"
+	grpcport = ":50051"
 )
 
 func init() {
@@ -42,8 +44,11 @@ func init() {
 		redisDB = i
 	}
 
-	if v, ok := os.LookupEnv("PORT"); ok {
-		port = v
+	if v, ok := os.LookupEnv("REST_PORT"); ok {
+		restport = v
+	}
+	if v, ok := os.LookupEnv("GRPC_PORT"); ok {
+		grpcport = v
 	}
 }
 
@@ -58,8 +63,9 @@ func main() {
 	}
 
 	app := application{
-		port:  port,
-		vault: v,
+		RESTPort: restport,
+		GRPCPort: grpcport,
+		vault:    v,
 	}
 
 	go app.RunREST()

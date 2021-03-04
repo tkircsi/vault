@@ -10,7 +10,7 @@ import (
 )
 
 func (app *application) RunGRPC() {
-	l, err := net.Listen("tcp", "0.0.0.0:50051")
+	l, err := net.Listen("tcp", "0.0.0.0"+app.GRPCPort)
 	if err != nil {
 		log.Fatalf("grpc: failed listen: %v\n", err)
 	}
