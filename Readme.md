@@ -72,11 +72,11 @@ services:
 
 ## Services
 
-### Get
+### REST
 
 Get service requires a token as input parameter and returns a token and value object.
 
-#### REST example
+#### Get
 
 Request
 
@@ -93,7 +93,35 @@ Response
 }
 ```
 
-#### gRpc example (Get/Put)
+#### Put
+
+Put service stores a sensitive value for a duration and returns a token. It requres a string(value) and an integer (seconds) as input parameters and returns a string token as result or an error.
+
+Request
+
+```
+http://localhost:5000/v1/put
+Content-Type=application/json
+```
+
+Body
+
+```
+{
+    "value": "{ \"id\": \"ABC_777888\" }",
+    "expire": 30
+}
+```
+
+Response
+
+```
+{
+    "token": "ad0GK_NGTOUInNOcJWghvHu7SRjOYe-RNi2h_XHJTU3TS0Vm2xEcjQH8LRcIOPRoNoqgwuWLm-5NDQ=="
+}
+```
+
+### gRPC (Get/Put)
 
 ```
 func testGRPC() {
@@ -131,35 +159,5 @@ func testGRPC() {
 		log.Fatal(err)
 	}
 	log.Printf("GetResponse: %s\n", gres.Value)
-}
-```
-
-### Put
-
-Put service stores a sensitive value for a duration and returns a token. It requres a string(value) and an integer (seconds) as input parameters and returns a string token as result or an error.
-
-#### REST example
-
-Request
-
-```
-http://localhost:5000/v1/put
-Content-Type=application/json
-```
-
-Body
-
-```
-{
-    "value": "{ \"id\": \"ABC_777888\" }",
-    "expire": 30
-}
-```
-
-Response
-
-```
-{
-    "token": "ad0GK_NGTOUInNOcJWghvHu7SRjOYe-RNi2h_XHJTU3TS0Vm2xEcjQH8LRcIOPRoNoqgwuWLm-5NDQ=="
 }
 ```
