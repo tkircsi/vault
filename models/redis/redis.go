@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/go-redis/redis/v8"
-	"github.com/rs/xid"
 	"github.com/tkircsi/vault/models"
+	"github.com/tkircsi/vault/services"
 )
 
 type RedisVault struct {
@@ -34,18 +34,25 @@ func NewRedisVault(addr string, pwd string, db int) *RedisVault {
 }
 
 func (r *RedisVault) Get(key string) (*models.Token, error) {
-	val, err := r.rdb.Get(ctx, key).Result()
+	cipher, err := r.rdb.Get(ctx, key).Result()
 	if err != nil {
 		return nil, models.ErrNoRecord
+	}
+	val, err := services.Decrypt(cipher)
+	if err != nil {
+		return nil, err
 	}
 	return &models.Token{Token: key, Value: val}, nil
 }
 
 func (r *RedisVault) Put(val string, exp time.Duration) (*models.Token, error) {
-	key := xid.New().String()
-	_, err := r.rdb.Set(ctx, key, val, exp).Result()
+	cipher, err := services.Encrpyt(val)
 	if err != nil {
 		return nil, err
 	}
-	return &models.Token{Token: key, Value: val}, nil
+	_, err = r.rdb.Set(ctx, cipher, cipher, exp).Result()
+	if err != nil {
+		return nil, err
+	}
+	return &models.Token{Token: cipher, Value: cipher}, nil
 }

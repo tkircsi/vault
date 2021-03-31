@@ -19,6 +19,6 @@ func (app *application) RunGRPC() {
 	h := server.NewGRPCHandler(app.vault)
 	vaultpb.RegisterVaultServiceServer(s, h)
 
-	log.Println("vault GRPC service started...")
+	log.Println("vault gRPC service started...")
 	log.Fatal(s.Serve(l))
 }

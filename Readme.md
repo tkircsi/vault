@@ -1,7 +1,7 @@
-# gRpc/REST Vault v0.0.1
+# gRPC/REST Vault v0.0.2
 
-Vault is a simple microservice, which is exchanging sensitive data with a token. It is a good use-case, when we do not want to share sensitive data with the client, but data is needed for other back-end services.
-The storage can be in-memory or redis now. The service is available via REST API/JSON or gRpc protocol.
+Vault is a simple microservice, which is exchanging sensitive data with a token. It is a good use-case, when we do not want to share sensitive data with the client, but data is needed for other back-end services. Data is stored with AEAD(authenticated encryption with associated data) with AES-GCM.
+The storage can be in-memory or redis. With Redis backend we can specify an expiration time for the token and data. The service is available via REST API/JSON or gRPC protocol.
 
 ## Environment variable
 
@@ -33,6 +33,10 @@ gRpc port. The default is ":500051"
 
 The REST/HTTP server mode. It can be 'debug' or 'release'. Use 'release' for production.
 
+#### SECRET_KEY
+
+The 32 bytes length AES-256 secret key
+
 ### Example docker-compose file
 
 ```
@@ -52,6 +56,7 @@ services:
       - REST_PORT=:5000
       - GRPC_PORT=:50051
       - GIN_MODE=debug # 'release' for production
+      - SECRET_KEY=32-bytes-length-secret-key-123-4
     depends_on:
       - vaultdb
 
@@ -76,14 +81,14 @@ Get service requires a token as input parameter and returns a token and value ob
 Request
 
 ```
-http://localhost:5000/v1/get/c0vvv16cmp4m9gdh4c1g
+http://localhost:5000/v1/get/ad0GK_NGTOUInNOcJWghvHu7SRjOYe-RNi2h_XHJTU3TS0Vm2xEcjQH8LRcIOPRoNoqgwuWLm-5NDQ==
 ```
 
 Response
 
 ```
 {
-  "token": "c0vvv16cmp4m9gdh4c1g",
+  "token": "ad0GK_NGTOUInNOcJWghvHu7SRjOYe-RNi2h_XHJTU3TS0Vm2xEcjQH8LRcIOPRoNoqgwuWLm-5NDQ==",
   "value": "sensitive data"
 }
 ```
@@ -148,5 +153,13 @@ Body
 {
     "value": "{ \"id\": \"ABC_777888\" }",
     "expire": 30
+}
+```
+
+Response
+
+```
+{
+    "token": "ad0GK_NGTOUInNOcJWghvHu7SRjOYe-RNi2h_XHJTU3TS0Vm2xEcjQH8LRcIOPRoNoqgwuWLm-5NDQ=="
 }
 ```
